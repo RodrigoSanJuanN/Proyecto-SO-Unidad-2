@@ -34,3 +34,34 @@ class TransaccionInput(BaseModel):
     cuenta_origen: str
     monto: float
     tipo: str
+
+@app.post("/transacciones")
+def crear_transaccion(tx: TransaccionInput):
+    id_tx = str(uuid.uuid4())
+    estado = "RECIBIDO"
+    ahora = datetime.now(timezone.utc)
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            """
+            INSERT INTO transacciones (id_transaccion, cuenta_origen, monto, tipo, estado, fecha_creacion)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """,
+            (id_tx, tx.cuenta_origen, tx.monto, tx.tipo, estado, ahora)
+        )
+        conn.commit()
+        cur.close()
+        conn.close()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error en base de datos relacional: {str(e)}")
+
+    return {
+        "id_transaccion": id_tx,
+        "cuenta_origen": tx.cuenta_origen,
+        "monto": tx.monto,
+        "tipo": tx.tipo,
+        "estado": estado,
+        "timestamp": ahora.isoformat()
+    }
