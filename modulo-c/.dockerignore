@@ -1,0 +1,8 @@
+node_modules
+__pycache__
+.venv
+venv
+servidor-auditoria
+.git
+.env
+.DS_Store
