@@ -1,0 +1,74 @@
+services:
+  db-relacional:
+    image: postgres:15-alpine
+    container_name: db-relacional
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: banco_db
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - isolated-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d banco_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  db-nosql:
+    image: mongo:6.0
+    container_name: db-nosql
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - isolated-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  modulo-b:
+    build: ./modulo-b
+    container_name: modulo-b
+    environment:
+      DATABASE_URL: postgresql://admin:password123@db-relacional:5432/banco_db
+    depends_on:
+      db-relacional:
+        condition: service_healthy
+    networks:
+      - isolated-network
+
+  modulo-c:
+    build: ./modulo-c
+    container_name: modulo-c
+    environment:
+      MONGO_URI: mongodb://db-nosql:27017
+    depends_on:
+      db-nosql:
+        condition: service_healthy
+    networks:
+      - isolated-network
+
+  modulo-a:
+    build: ./modulo-a
+    container_name: modulo-a
+    ports:
+      - "8080:8080"
+    environment:
+      MODULO_B_URL: http://modulo-b:5000
+      MODULO_C_URL: http://modulo-c:6000
+    depends_on:
+      - modulo-b
+      - modulo-c
+    networks:
+      - isolated-network
+
+networks:
+  isolated-network:
+    driver: bridge
+
+volumes:
+  pg_data:
+  mongo_data:
