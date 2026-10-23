@@ -192,7 +192,7 @@ Invoke-RestMethod `
   -Body '{"cuenta_origen":"123456789","monto":1500.50,"tipo":"TRANSFERENCIA"}'
 ```
 
-También se puede utilizar Postman, Insomnia o cualquier cliente HTTP.
+También se puede utilizar Postman, Insomnia o cualquier cliente HTTP con el archivo pruebas.json.
 
 ## Persistencia y configuración
 
