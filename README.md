@@ -65,11 +65,13 @@ Se utiliza Node.js porque el gateway realiza principalmente operaciones de
 entrada, comunicación y coordinación asíncrona entre servicios. Express
 simplifica la creación de la API HTTP.
 
+
+
 ### Módulo B: Servicio de dominio transaccional
 
 Archivo principal: [`modulo-b/main.py`](modulo-b/main.py)
 
-Expone `POST /transacciones`. Genera un UUID, asigna el estado inicial
+Expone `POST /transacciones`. Este es accesible solo para el moduloa-a. Genera un UUID, asigna el estado inicial
 `RECIBIDO` y guarda la operación en la tabla `transacciones` de PostgreSQL.
 FastAPI y Pydantic validan el modelo de entrada, mientras que `psycopg2`
 permite la conexión con PostgreSQL.
@@ -81,7 +83,7 @@ requieren persistencia organizada en tablas.
 
 Archivo principal: [`modulo-c/main.go`](modulo-c/main.go)
 
-Expone `POST /eventos`. Recibe el resultado de la operación y lo guarda como
+Expone `POST /eventos`. Este es accesible solo para el moduloa-a. Recibe el resultado de la operación y lo guarda como
 un documento en la colección `eventos_auditoria` de la base `auditoria_db`.
 
 Go es adecuado para este servicio por su bajo consumo de recursos y su buen
@@ -91,6 +93,7 @@ documentales flexibles y separados de la información transaccional.
 ## Flujo de una transacción
 
 1. El cliente envía una solicitud al Módulo A.
+    La coleccion de Postman pruebas.json para realizar las pruebas de POST.
 2. El gateway valida `cuenta_origen`, `monto` y `tipo`.
 3. El Módulo A envía la operación al Módulo B.
 4. El Módulo B genera el identificador y persiste la transacción en PostgreSQL.
