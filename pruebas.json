@@ -1,0 +1,54 @@
+{
+  "info": {
+    "name": "Pruebas",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Crear Transacción Exitosa",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cuenta_origen\": \"cta-987654\",\n  \"monto\": 25000.00,\n  \"tipo\": \"transferencia\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/transacciones",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "transacciones"]
+        }
+      }
+    },
+    {
+      "name": "Prueba Error - Payload Inválido",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"monto\": -500\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/transacciones",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "transacciones"]
+        }
+      }
+    }
+  ]
+}
